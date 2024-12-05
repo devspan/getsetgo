@@ -1,39 +1,110 @@
 <template>
-  <div class="wrapper">
-    <v-sheet width="300" class="mx-auto login-block">
-      <h1 class="login-block-h1">Admin Panel</h1>
-      <v-form fast-fail @submit.prevent>
-        <v-text-field
-          v-model="user"
-          label="Login"
-        ></v-text-field>
+  <div class="login-page">
+    <div class="login-content">
+      <!-- Logo/Brand Section -->
+      <div class="brand-section">
+        <v-icon
+          icon="mdi-shield-lock" 
+          size="64" 
+          class="brand-icon"
+          :color="localConfig.theme.colors.primary"
+        />
+        <h1 class="brand-title">{{ localConfig.title }}</h1>
+        <p class="brand-subtitle">Admin Portal</p>
+      </div>
 
-        <v-text-field
-          v-model="pass"
-          label="Password"
-          type="password"
-        ></v-text-field>
+      <!-- Login Form -->
+      <v-card
+        class="login-card"
+        :theme="theme"
+        elevation="0"
+      >
+        <v-card-text class="login-form">
+          <v-form
+            ref="form"
+            v-model="isValid"
+            fast-fail
+            @submit.prevent="login"
+          >
+            <div class="input-group">
+              <label class="input-label">Username</label>
+              <v-text-field
+                v-model="user"
+                placeholder="Enter your username"
+                :rules="[v => !!v || 'Username is required']"
+                prepend-inner-icon="mdi-account"
+                variant="outlined"
+                color="primary"
+                density="comfortable"
+                bg-color="rgba(0, 0, 0, 0.2)"
+                autocomplete="username"
+                hide-details
+              />
+            </div>
 
-        <v-text-field
-          v-model="code"
-          label="2FA code"
-        ></v-text-field>
+            <div class="input-group">
+              <label class="input-label">Password</label>
+              <v-text-field
+                v-model="pass"
+                placeholder="Enter your password"
+                :rules="[v => !!v || 'Password is required']"
+                prepend-inner-icon="mdi-lock"
+                :append-inner-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'"
+                variant="outlined"
+                color="primary"
+                density="comfortable"
+                bg-color="rgba(0, 0, 0, 0.2)"
+                autocomplete="current-password"
+                :type="showPassword ? 'text' : 'password'"
+                @click:append-inner="showPassword = !showPassword"
+                hide-details
+              />
+            </div>
 
-        <v-btn block class="mt-2" variant="tonal" @click="login()">Submit</v-btn>
-      </v-form>
-    </v-sheet>
+            <div class="input-group">
+              <label class="input-label">2FA Code</label>
+              <v-text-field
+                v-model="code"
+                placeholder="Enter 2FA code"
+                :rules="[v => !!v || '2FA Code is required']"
+                prepend-inner-icon="mdi-shield-key"
+                variant="outlined"
+                color="primary"
+                density="comfortable"
+                bg-color="rgba(0, 0, 0, 0.2)"
+                maxlength="6"
+                autocomplete="one-time-code"
+                hide-details
+              />
+            </div>
+
+            <v-btn
+              block
+              color="primary"
+              size="large"
+              height="48"
+              :loading="isLoading"
+              :disabled="!isValid || isLoading"
+              @click="login"
+              class="sign-in-btn"
+            >
+              Sign In
+            </v-btn>
+          </v-form>
+        </v-card-text>
+      </v-card>
+    </div>
+
+    <!-- Alert -->
+    <v-snackbar
+      v-model="alert"
+      :color="alertType"
+      location="bottom right"
+      timeout="3000"
+    >
+      {{ alertText }}
+    </v-snackbar>
   </div>
-  <v-alert
-    class="alert-block"
-    v-if="alert"
-    color="pink"
-    dark
-    border="top"
-    icon="mdi-home"
-    transition="scale-transition"
-  >
-    {{ alertText }}
-  </v-alert>
 </template>
 
 <script setup>
@@ -42,25 +113,42 @@ import axios from 'axios'
 import localConfig from "@/local_config"
 import { useRouter } from 'vue-router'
 import { findErrMessage } from "@/plugins/helpers"
+
 const apiKey = localConfig.api
 const user = ref("")
 const pass = ref("")
 const code = ref("")
 const alert = ref(false)
 const alertText = ref('')
+const alertType = ref('error')
 const router = useRouter()
+const isLoading = ref(false)
+const isValid = ref(false)
+const showPassword = ref(false)
+const form = ref(null)
+const theme = ref('dark')
+
 const login = async () => {
+  if (!isValid.value || isLoading.value) return;
+  
+  isLoading.value = true;
   try {
     const response = await axios.post(`${apiKey}login/`, {
       username: user.value,
       password: pass.value,
       otp_token: code.value
-      
     });    
     localStorage.setItem("jwt_token", response.data.access_token)
-    router.push({path: '/page/dashboard'})
+    alertType.value = 'success'
+    showAlert('Login successful, redirecting...')
+    setTimeout(() => {
+      router.push({path: '/page/dashboard'})
+    }, 1000)
   } catch (error) {
+    alertType.value = 'error'
     showAlert(error)
+  } finally {
+    isLoading.value = false
   }
 }
 
@@ -69,45 +157,146 @@ const showAlert = (err) => {
   if(alertMessage) {
     alert.value = true
     alertText.value = alertMessage
-    setTimeout(() => {
-      alert.value = false
-      alertText.value = ''
-    }, 3000)
+  }
+}
+</script>
+
+<style scoped>
+.login-page {
+  min-height: 100vh;
+  min-width: 100vw;
+  display: grid;
+  grid-template-columns: 1fr minmax(360px, 400px) 1fr;
+  background: linear-gradient(135deg, #1a237e 0%, #0d47a1 100%);
+}
+
+.login-content {
+  grid-column: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 2rem;
+  height: 100vh;
+}
+
+.brand-section {
+  text-align: center;
+  margin-bottom: 3rem;
+  color: white;
+}
+
+.brand-icon {
+  margin-bottom: 1.5rem;
+  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.2));
+}
+
+.brand-title {
+  font-size: 2.5rem;
+  font-weight: 600;
+  margin: 0;
+  letter-spacing: -0.5px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.brand-subtitle {
+  font-size: 1.1rem;
+  opacity: 0.9;
+  margin-top: 0.5rem;
+  font-weight: 400;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.login-card {
+  background: transparent !important;
+}
+
+.login-form {
+  padding: 0;
+}
+
+.input-group {
+  margin-bottom: 1.5rem;
+}
+
+.input-label {
+  display: block;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  margin-left: 0.25rem;
+}
+
+:deep(.v-field) {
+  border-radius: 8px;
+  --v-field-border-opacity: 0.15;
+  background: rgba(0, 0, 0, 0.2) !important;
+}
+
+:deep(.v-field__input) {
+  padding: 8px 12px;
+  font-size: 0.9375rem;
+  min-height: 44px !important;
+}
+
+:deep(.v-field__prepend-inner) {
+  opacity: 0.7;
+}
+
+:deep(.v-text-field .v-input__control) {
+  min-height: 44px !important;
+}
+
+:deep(.v-field__outline) {
+  --v-field-border-opacity: 0.15 !important;
+  color: rgba(255, 255, 255, 0.3) !important;
+}
+
+:deep(.v-field--variant-outlined .v-field__outline) {
+  opacity: 0.15;
+}
+
+.sign-in-btn {
+  margin-top: 2rem;
+  text-transform: none;
+  font-size: 1rem;
+  font-weight: 500;
+  letter-spacing: 0;
+  height: 48px;
+}
+
+/* Dark mode input styles */
+:deep(.v-field.v-field--variant-outlined) {
+  --v-field-border-opacity: 0.15;
+}
+
+:deep(.v-field--focused .v-field__outline) {
+  opacity: 0.5 !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  .login-page {
+    grid-template-columns: 1rem 1fr 1rem;
+  }
+  
+  .login-content {
+    padding: 1rem;
+  }
+  
+  .brand-title {
+    font-size: 2rem;
+  }
+  
+  .brand-subtitle {
+    font-size: 1rem;
   }
 }
 
-</script>
-
-<style>
-.wrapper {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  background: #38485C;
-}
-input {
-    border: 1px solid #CCC;
-    padding: 5px;
-}
-label {
-    display: block;
-    width: 150px;
-}
-.alert-block {
-  position: fixed !important;
-  bottom: 0 !important;
-  right: 0 !important;
-  width: 520px !important;
-  z-index: 22 !important;
-}
-.login-block {
-  padding: 40px;
-}
-.login-block-h1 {
-  font-size: 25px;
-  font-weight: bold;
-  padding-bottom: 10px;
-  text-align: center;
+/* Ensure proper height on mobile browsers */
+@supports (-webkit-touch-callout: none) {
+  .login-page {
+    min-height: -webkit-fill-available;
+  }
 }
 </style>
