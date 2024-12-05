@@ -1,56 +1,62 @@
 import { createApp } from 'vue'
+import { createPinia } from 'pinia'
 import App from './App.vue'
-import './index.css'
-import initRouter from "../src/router"
-import '@mdi/font/css/materialdesignicons.css'
-import 'vuetify/styles'
+import router from './router'
 import { createVuetify } from 'vuetify'
 import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
-import { createPinia } from 'pinia'
-import { createHead } from "@vueuse/head"
-import localConfig from './local_config'
-
-const pinia = createPinia()
+import { aliases, mdi } from 'vuetify/iconsets/mdi'
+import '@mdi/font/css/materialdesignicons.css'
+import 'vuetify/styles'
+import './index.css'
 
 const vuetify = createVuetify({
   components,
   directives,
+  icons: {
+    defaultSet: 'mdi',
+    aliases,
+    sets: {
+      mdi,
+    },
+  },
   theme: {
     defaultTheme: 'light',
     themes: {
       light: {
         dark: false,
         colors: {
-          ...localConfig.theme.colors,
-          'on-primary': '#FFFFFF',
-          'on-secondary': '#FFFFFF',
-          'on-surface': '#1E293B',
-          'border': '#E2E8F0',
-          'divider': '#E2E8F0',
+          background: '#F8FAFC',
+          surface: '#FFFFFF',
+          primary: '#2962FF',
+          secondary: '#64748B',
+          error: '#DC2626',
+          info: '#2563EB',
+          success: '#059669',
+          warning: '#D97706'
         }
       },
       dark: {
         dark: true,
         colors: {
-          ...localConfig.theme.dark,
-          'on-primary': '#FFFFFF',
-          'on-secondary': '#FFFFFF',
-          'on-surface': '#F8FAFC',
-          'border': '#334155',
-          'divider': '#334155',
+          background: '#0F172A',
+          surface: '#1E293B',
+          primary: '#2962FF',
+          secondary: '#94A3B8',
+          error: '#EF4444',
+          info: '#3B82F6',
+          success: '#10B981',
+          warning: '#F59E0B'
         }
       }
     }
   }
 })
 
-export const app = createApp(App);
-const head = createHead()
+const app = createApp(App)
 
+app.use(createPinia())
+app.use(router)
 app.use(vuetify)
-app.use(initRouter)
-app.use(pinia)
-app.use(head)
-// eslint-disable-next-line vue/multi-word-component-names
-app.mount("#app");
+
+app.mount('#app')

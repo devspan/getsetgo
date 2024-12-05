@@ -1,5 +1,5 @@
 <template>
-  <v-app :theme="theme">
+  <v-app :theme="themeStore.isDark ? 'dark' : 'light'">
     <SideBar v-if="pageName !== 'Login'" />
     <v-main 
       :class="{
@@ -17,7 +17,6 @@
       <router-view v-else />
     </v-main>
 
-    <!-- Global Alert Component -->
     <v-snackbar
       v-model="showAlert"
       :color="alertType"
@@ -26,12 +25,7 @@
     >
       {{ alertMessage }}
       <template v-slot:actions>
-        <v-btn
-          variant="text"
-          @click="showAlert = false"
-        >
-          Close
-        </v-btn>
+        <v-btn variant="text" @click="showAlert = false">Close</v-btn>
       </template>
     </v-snackbar>
   </v-app>
@@ -43,18 +37,14 @@ import SideBar from './components/layout/SideBar.vue'
 import { useRoute } from 'vue-router'
 import localConfig from "./local_config"
 import { useHead } from '@vueuse/head'
+import { useThemeStore } from '@/stores/theme'
 
+const themeStore = useThemeStore()
 const route = useRoute()
 const pageName = ref("")
-const theme = ref('light')
 const showAlert = ref(false)
 const alertMessage = ref('')
 const alertType = ref('info')
-
-// Theme toggle function (can be used later)
-const toggleTheme = () => {
-  theme.value = theme.value === 'light' ? 'dark' : 'light'
-}
 
 useHead({
   title: `${localConfig.title}`,
@@ -63,12 +53,12 @@ useHead({
 
 watch(
   () => route.name,
-  (newValue) => {
-    pageName.value = newValue ? newValue.toString() : "";
+  (name) => {
+    pageName.value = name;
   }
 );
 
-// Global alert function that can be used throughout the app
+// Global alert function
 const showGlobalAlert = (message, type = 'info') => {
   alertMessage.value = message
   alertType.value = type
@@ -80,15 +70,22 @@ window.$showAlert = showGlobalAlert
 </script>
 
 <style>
-.login {
-  background: linear-gradient(135deg, var(--primary), #3D5AFE);
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+:root {
+  color-scheme: light dark;
 }
 
 .v-application {
-  background-color: var(--background) !important;
+  background-color: rgb(var(--v-theme-background)) !important;
+}
+
+.v-theme--dark {
+  --v-theme-overlay-multiplier: 0.8;
+}
+
+/* Transition effects */
+.v-application *,
+.v-application *::before,
+.v-application *::after {
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 </style>
