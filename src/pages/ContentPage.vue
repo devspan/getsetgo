@@ -942,108 +942,237 @@
 
 <style>
 .v-list-item-title {
-  font-size: 14px !important;
+  font-size: 15px !important;
+  font-weight: 500 !important;
 }
+
 .v-list-item__spacer {
   width: 16px !important;
+}
+
+/* Add crisp text rendering */
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 </style>
   
 <style scoped>
+/* Content table styles */
 .content-page-table {
   overflow-x: auto;
-  font-size: 11px;
+  font-size: 14px !important;
+  background: var(--v-theme-surface);
+  border-radius: 8px;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 }
 
+/* Action cell styling */
 .action-cell {
   display: flex;
   flex-wrap: nowrap;
+  gap: 8px;
+  align-items: center;
 }
-.action-cell>i {
-  margin-right: 10px;
-}
-.content-page-table__cell {
-  font-size: 12px;
-  position: relative;
-}
-.content-page-table__cell-edit {
-  /* position: absolute; */
-  top: 0;
-  width: 133px;
-  left: -17px;
-}
-.content-page-table__cell-edit input {
-  background: #fff;
-  max-width: 90px;
-  text-align: center;
-  min-width: 0;
-  width: auto;
-}
-.checks {
-  width: 20px;
-}
-.content-page__search {
-  width: 350px !important;
-  max-width: 350px;
-}
-.breadcrumbs {
-  padding: 20px;
-  color: rgba(0, 0, 0, 0.38);
+
+.action-icons {
   display: flex;
-  background: white;
-  margin-bottom: 50px;
+  align-items: center;
+  min-width: 120px;
+  gap: 8px;
 }
+
+/* Table cell improvements */
+.content-page-table__cell {
+  font-size: 14px !important;
+  line-height: 1.5;
+  padding: 12px 16px;
+  position: relative;
+  color: var(--v-theme-on-surface);
+}
+
+/* Edit mode styling */
+.content-page-table__cell-edit {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px;
+  border-radius: 4px;
+  background: rgba(var(--v-theme-primary), 0.05);
+}
+
+.content-page-table__cell-edit input {
+  background: var(--v-theme-surface);
+  border: 1px solid rgba(var(--v-theme-primary), 0.2);
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-size: 14px;
+  min-width: 120px;
+  transition: all 0.2s ease;
+}
+
+.content-page-table__cell-edit input:focus {
+  border-color: rgb(var(--v-theme-primary));
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(var(--v-theme-primary), 0.1);
+}
+
+/* Checkbox column */
+.checks {
+  width: 40px;
+  text-align: center;
+}
+
+/* Search field */
+.content-page__search {
+  width: 300px !important;
+  max-width: 300px;
+}
+
+/* Breadcrumbs styling */
+.breadcrumbs {
+  padding: 16px 24px;
+  color: var(--v-theme-secondary);
+  display: flex;
+  align-items: center;
+  background: transparent;
+  margin-bottom: 24px;
+  gap: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
 .breadcrumbs__link {
   color: rgb(var(--v-theme-primary));
   cursor: pointer;
-  display: block;
-  margin-right: 6px;
-}
-.content-page__btn {
-  margin-left: 20px;
-}
-.v-data-table-footer {
-  display: none;
+  display: inline-flex;
+  align-items: center;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  padding: 4px 8px;
+  border-radius: 4px;
 }
 
+.breadcrumbs__link:hover {
+  background: rgba(var(--v-theme-primary), 0.05);
+}
+
+.breadcrumbs__separator {
+  color: var(--v-theme-secondary);
+  opacity: 0.5;
+  margin: 0 4px;
+}
+
+/* Button styling */
+.content-page__btn {
+  margin-left: 16px;
+  font-weight: 500;
+}
+
+/* Filter panel */
 .filters-block {
   position: absolute;
-  background: #FFF;
-  padding: 20px;
+  background: var(--v-theme-surface);
+  padding: 24px;
   right: 32px;
   top: 147px;
   width: 400px;
   z-index: 2;
-  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(var(--v-border-color), 0.12);
 }
+
+/* Customize fields panel */
 .customize-fields {
   position: absolute;
-  background: #FFF;
-  padding: 40px 20px 20px;
+  background: var(--v-theme-surface);
+  padding: 24px;
   left: 32px;
   top: 45px;
-  min-width: 238px;
+  min-width: 260px;
   z-index: 2;
-  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(var(--v-border-color), 0.12);
 }
+
+/* Actions section */
 .actions-line {
   padding: 20px;
   margin-top: 10px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
 }
+
+/* Alert styling */
 .alert-block {
   position: fixed !important;
-  bottom: 0 !important;
-  right: 0 !important;
-  width: 520px !important;
-  z-index: 22 !important;
+  bottom: 24px !important;
+  right: 24px !important;
+  width: 420px !important;
+  z-index: 100 !important;
+  border-radius: 8px !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
 }
-.edit-input {
-  border: 1px solid #ccc;
+
+/* Table improvements */
+:deep(.v-data-table) {
+  border-radius: 8px;
+  border: 1px solid rgba(var(--v-border-color), 0.12);
 }
-.action-icons {
-  display: flex;
-  align-items: center;
-  min-width: 100px;
-  gap: 5px;
+
+:deep(.v-data-table th) {
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  color: var(--v-theme-secondary);
+  text-transform: none;
+  letter-spacing: normal;
+  padding: 12px 16px !important;
+  background: rgba(var(--v-theme-secondary), 0.05);
+}
+
+:deep(.v-data-table td) {
+  font-size: 14px !important;
+  padding: 12px 16px !important;
+  border-bottom: 1px solid rgba(var(--v-border-color), 0.12);
+}
+
+:deep(.v-data-table tr:hover td) {
+  background: rgba(var(--v-theme-primary), 0.05);
+}
+
+/* Status indicators */
+:deep(.v-chip) {
+  font-weight: 500;
+  font-size: 13px !important;
+}
+
+/* Action buttons */
+:deep(.v-btn--icon) {
+  border-radius: 8px;
+  background: rgba(var(--v-theme-secondary), 0.05);
+}
+
+:deep(.v-btn--icon:hover) {
+  background: rgba(var(--v-theme-secondary), 0.1);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .content-page__search {
+    width: 100% !important;
+    max-width: 100%;
+  }
+  
+  .filters-block,
+  .customize-fields {
+    width: calc(100% - 48px);
+    left: 24px;
+    right: 24px;
+  }
 }
 </style>
