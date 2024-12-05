@@ -1,5 +1,34 @@
 <template>
   <div class="login-page">
+    <!-- Loading Overlay -->
+    <div v-if="isLoading" class="loading-overlay">
+      <div class="loading-content">
+        <v-icon
+          icon="mdi-shield-lock"
+          size="48"
+          class="loading-icon"
+          :color="localConfig.theme.colors.primary"
+        />
+        <div class="loading-spinner">
+          <svg class="circular" viewBox="25 25 50 50">
+            <circle
+              class="path"
+              cx="50"
+              cy="50"
+              r="20"
+              fill="none"
+              stroke-width="4"
+              stroke-miterlimit="10"
+            />
+          </svg>
+        </div>
+        <div class="loading-text">
+          <h3>Authenticating</h3>
+          <p>Please wait...</p>
+        </div>
+      </div>
+    </div>
+
     <div class="login-content">
       <!-- Logo/Brand Section -->
       <div class="brand-section">
@@ -263,6 +292,12 @@ const showAlert = (err) => {
   font-weight: 500;
   letter-spacing: 0;
   height: 48px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.sign-in-btn:not(:disabled):hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 /* Dark mode input styles */
@@ -297,6 +332,122 @@ const showAlert = (err) => {
 @supports (-webkit-touch-callout: none) {
   .login-page {
     min-height: -webkit-fill-available;
+  }
+}
+
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(26, 35, 126, 0.98);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  backdrop-filter: blur(8px);
+  animation: fadeIn 0.3s ease-out;
+}
+
+.loading-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.loading-icon {
+  animation: pulse 2s infinite;
+}
+
+.loading-text {
+  text-align: center;
+  color: white;
+}
+
+.loading-text h3 {
+  font-size: 1.25rem;
+  font-weight: 500;
+  margin: 0;
+  opacity: 0.9;
+}
+
+.loading-text p {
+  font-size: 0.875rem;
+  margin: 0.5rem 0 0;
+  opacity: 0.7;
+}
+
+.loading-spinner {
+  position: relative;
+  width: 40px;
+  height: 40px;
+}
+
+.circular {
+  animation: rotate 2s linear infinite;
+  height: 100%;
+  transform-origin: center center;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
+}
+
+.path {
+  stroke: var(--v-theme-primary);
+  stroke-dasharray: 89, 200;
+  stroke-dashoffset: 0;
+  stroke-linecap: round;
+  animation: dash 1.5s ease-in-out infinite;
+}
+
+@keyframes rotate {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes dash {
+  0% {
+    stroke-dasharray: 1, 200;
+    stroke-dashoffset: 0;
+  }
+  50% {
+    stroke-dasharray: 89, 200;
+    stroke-dashoffset: -35px;
+  }
+  100% {
+    stroke-dasharray: 89, 200;
+    stroke-dashoffset: -124px;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }
 </style>
