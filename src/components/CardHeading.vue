@@ -1,53 +1,46 @@
 <template>
-  <div class="v-card--material">
-    <v-sheet
-      :color="color"
-      :max-height="90"
-      width="auto"
-      elevation="6"
-      class="text-start pa-7 rounded"
-      dark
-    >
-      <v-icon size="32" :icon="icon" color="white" />
-    </v-sheet>
-
-    <div class="ml-4">
-      <div class="font-light text-lg text-black">
-        {{ title }}
+  <div class="px-6 py-4 flex items-center justify-between border-b border-gray-100">
+    <div class="flex items-center space-x-3">
+      <div 
+        class="rounded-lg p-2"
+        :style="`background: ${color}15; color: ${color}`"
+      >
+        <v-icon :icon="icon" />
       </div>
+      <h2 class="text-lg font-semibold">{{ title }}</h2>
+    </div>
+    
+    <div class="flex items-center space-x-2" v-if="actions">
+      <v-btn
+        v-for="(action, index) in actions"
+        :key="index"
+        :icon="action.icon"
+        variant="text"
+        density="comfortable"
+        size="small"
+        @click="action.click"
+      />
     </div>
   </div>
 </template>
 
-<script>
-export default {
-  name: "MaterialCard",
-
-  props: {
-    title: {
-      type: String,
-      default: "",
-    },
-    color: {
-      type: String,
-      default: "success",
-    },
-    icon: {
-      type: String,
-      default: undefined,
-    },
+<script setup>
+defineProps({
+  title: {
+    type: String,
+    required: true
   },
-};
+  color: {
+    type: String,
+    default: 'primary'
+  },
+  icon: {
+    type: String,
+    required: true
+  },
+  actions: {
+    type: Array,
+    default: () => []
+  }
+});
 </script>
-
-<style>
-.v-card--material {
-  position: relative;
-  top: -18px;
-  margin-bottom: -18px;
-  padding-left: 18px;
-  flex-wrap: wrap;
-  display: flex;
-  align-items: center;
-}
-</style>
